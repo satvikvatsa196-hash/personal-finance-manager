@@ -5,7 +5,7 @@ import com.example.financemanager.model.enums.CategoryType
 data class CategoryDto(
     val name: String,
     val type: CategoryType,
-    val isCustom: Boolean
+    val custom: Boolean
 )
 
 data class CategoryListResponse(

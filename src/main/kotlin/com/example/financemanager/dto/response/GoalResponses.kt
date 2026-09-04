@@ -10,7 +10,7 @@ data class GoalDto(
     val targetDate: LocalDate,
     val startDate: LocalDate,
     val currentProgress: BigDecimal,
-    val progressPercentage: BigDecimal,
+    val progressPercentage: Double,
     val remainingAmount: BigDecimal
 )
 

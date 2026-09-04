@@ -47,6 +47,7 @@ class TransactionService(
         startDate: LocalDate?,
         endDate: LocalDate?,
         categoryId: Long?,
+        categoryName: String?,
         type: CategoryType?
     ): TransactionListResponse {
         val spec = Specification<Transaction> { root, query, cb ->
@@ -60,6 +61,9 @@ class TransactionService(
             }
             if (categoryId != null) {
                 predicates.add(cb.equal(root.get<Any>("category").get<Long>("id"), categoryId))
+            }
+            if (categoryName != null) {
+                predicates.add(cb.equal(root.get<Any>("category").get<String>("name"), categoryName))
             }
             if (type != null) {
                 predicates.add(cb.equal(root.get<Any>("category").get<CategoryType>("type"), type))

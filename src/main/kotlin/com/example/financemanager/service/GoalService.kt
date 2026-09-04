@@ -94,9 +94,10 @@ class GoalService(
             currentProgress.divide(goal.targetAmount, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal("100"))
                 .setScale(2, RoundingMode.HALF_UP)
-                .min(BigDecimal("100.00")) // Cap at 100%
+                .min(BigDecimal("100.00"))
+                .toDouble()
         } else {
-            BigDecimal.ZERO
+            0.0
         }
 
         return GoalDto(

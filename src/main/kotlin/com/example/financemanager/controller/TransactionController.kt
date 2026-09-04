@@ -37,9 +37,10 @@ class TransactionController(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate?,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate?,
         @RequestParam(required = false) categoryId: Long?,
+        @RequestParam(required = false) category: String?,
         @RequestParam(required = false) type: CategoryType?
     ): ResponseEntity<TransactionListResponse> {
-        val response = transactionService.getTransactions(userPrincipal.getUser(), startDate, endDate, categoryId, type)
+        val response = transactionService.getTransactions(userPrincipal.getUser(), startDate, endDate, categoryId, category, type)
         return ResponseEntity.ok(response)
     }
 

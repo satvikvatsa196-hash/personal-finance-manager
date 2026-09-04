@@ -27,7 +27,7 @@ class CategoryService(
             CategoryDto(
                 name = it.name,
                 type = it.type,
-                isCustom = it.isCustom
+                custom = it.isCustom
             )
         }
         return CategoryListResponse(categoryDtos)
@@ -54,7 +54,7 @@ class CategoryService(
         return CategoryDto(
             name = savedCategory.name,
             type = savedCategory.type,
-            isCustom = savedCategory.isCustom
+            custom = savedCategory.isCustom
         )
     }
 
