@@ -54,8 +54,13 @@ class GoalService(
     fun updateGoal(user: User, id: Long, request: GoalUpdateRequest): GoalDto {
         val goal = getGoalForUser(user, id)
 
-        goal.targetAmount = requireNotNull(request.targetAmount) { "Target amount is required" }
-        goal.targetDate = requireNotNull(request.targetDate) { "Target date is required" }
+        if (request.targetAmount != null) {
+            goal.targetAmount = request.targetAmount
+        }
+        
+        if (request.targetDate != null) {
+            goal.targetDate = request.targetDate
+        }
 
         val updated = goalRepository.save(goal)
         return mapToDto(user, updated)

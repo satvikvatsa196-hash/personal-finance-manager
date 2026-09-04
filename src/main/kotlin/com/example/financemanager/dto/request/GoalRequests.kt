@@ -23,11 +23,9 @@ data class GoalRequest(
 )
 
 data class GoalUpdateRequest(
-    @field:NotNull(message = "Target amount is required")
     @field:Positive(message = "Target amount must be positive")
     val targetAmount: BigDecimal?,
 
-    @field:NotNull(message = "Target date is required")
     @field:Future(message = "Target date must be a future date")
     val targetDate: LocalDate?
 )
