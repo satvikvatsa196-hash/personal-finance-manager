@@ -16,18 +16,18 @@ class UserService(
 
     @Transactional
     fun registerUser(request: RegisterRequest): Long {
-        if (userRepository.existsByUsername(request.username!!)) {
+        if (userRepository.existsByUsername(requireNotNull(request.username))) {
             throw ConflictException("Username already exists")
         }
 
         val user = User(
-            username = request.username,
-            passwordHash = passwordEncoder.encode(request.password),
-            fullName = request.fullName!!,
-            phoneNumber = request.phoneNumber!!
+            username = requireNotNull(request.username),
+            passwordHash = passwordEncoder.encode(requireNotNull(request.password)),
+            fullName = requireNotNull(request.fullName),
+            phoneNumber = requireNotNull(request.phoneNumber)
         )
 
         val savedUser = userRepository.save(user)
-        return savedUser.id!!
+        return requireNotNull(savedUser.id) { "User ID should not be null after save" }
     }
 }

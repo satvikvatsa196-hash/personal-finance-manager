@@ -41,6 +41,7 @@ class SecurityConfig(
             .cors { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 auth.requestMatchers(
                     "/api/test/validate",
                     "/api/test/bad-request",

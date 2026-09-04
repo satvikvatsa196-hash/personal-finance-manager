@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 class UserPrincipal(private val user: User) : UserDetails {
 
-    fun getId(): Long = user.id!!
+    fun getId(): Long = requireNotNull(user.id) { "User ID should not be null in Principal" }
     
     fun getUser(): User = user
 

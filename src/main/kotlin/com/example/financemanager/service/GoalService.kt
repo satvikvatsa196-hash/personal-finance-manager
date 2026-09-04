@@ -27,10 +27,10 @@ class GoalService(
         val startDate = request.startDate ?: LocalDate.now()
 
         val goal = SavingsGoal(
-            goalName = request.goalName!!,
-            targetAmount = request.targetAmount!!,
+            goalName = requireNotNull(request.goalName) { "Goal name is required" },
+            targetAmount = requireNotNull(request.targetAmount) { "Target amount is required" },
             startDate = startDate,
-            targetDate = request.targetDate!!,
+            targetDate = requireNotNull(request.targetDate) { "Target date is required" },
             user = user
         )
 
@@ -54,8 +54,8 @@ class GoalService(
     fun updateGoal(user: User, id: Long, request: GoalUpdateRequest): GoalDto {
         val goal = getGoalForUser(user, id)
 
-        goal.targetAmount = request.targetAmount!!
-        goal.targetDate = request.targetDate!!
+        goal.targetAmount = requireNotNull(request.targetAmount) { "Target amount is required" }
+        goal.targetDate = requireNotNull(request.targetDate) { "Target date is required" }
 
         val updated = goalRepository.save(goal)
         return mapToDto(user, updated)
@@ -95,7 +95,7 @@ class GoalService(
         }
 
         return GoalDto(
-            id = goal.id!!,
+            id = requireNotNull(goal.id) { "Goal ID should not be null" },
             goalName = goal.goalName,
             targetAmount = goal.targetAmount,
             targetDate = goal.targetDate,

@@ -25,12 +25,13 @@ class TransactionService(
 
     @Transactional
     fun createTransaction(user: User, request: TransactionRequest): TransactionDto {
-        val category = categoryRepository.findAccessibleCategoryByName(user, request.category!!)
+        val categoryName = requireNotNull(request.category) { "Category is required" }
+        val category = categoryRepository.findAccessibleCategoryByName(user, categoryName)
             ?: throw BadRequestException("Category not found or not accessible")
 
         val transaction = Transaction(
-            amount = request.amount!!,
-            date = request.date!!,
+            amount = requireNotNull(request.amount) { "Amount is required" },
+            date = requireNotNull(request.date) { "Date is required" },
             category = category,
             description = request.description,
             user = user
@@ -76,10 +77,11 @@ class TransactionService(
     fun updateTransaction(user: User, id: Long, request: TransactionUpdateRequest): TransactionDto {
         val transaction = getTransactionForUser(user, id)
 
-        val category = categoryRepository.findAccessibleCategoryByName(user, request.category!!)
+        val categoryName = requireNotNull(request.category) { "Category is required" }
+        val category = categoryRepository.findAccessibleCategoryByName(user, categoryName)
             ?: throw BadRequestException("Category not found or not accessible")
 
-        transaction.amount = request.amount!!
+        transaction.amount = requireNotNull(request.amount) { "Amount is required" }
         transaction.category = category
         transaction.description = request.description
         // Date cannot be changed
@@ -107,7 +109,7 @@ class TransactionService(
 
     private fun mapToDto(transaction: Transaction): TransactionDto {
         return TransactionDto(
-            id = transaction.id!!,
+            id = requireNotNull(transaction.id) { "Transaction ID should not be null" },
             amount = transaction.amount,
             date = transaction.date,
             category = transaction.category.name,

@@ -35,15 +35,16 @@ class CategoryService(
 
     @Transactional
     fun createCustomCategory(user: User, request: CategoryRequest): CategoryDto {
+        val categoryName = requireNotNull(request.name) { "Category name is required" }
         // Check if a category with this name already exists for the user (or as a default)
-        if (categoryRepository.existsByUserAndName(user, request.name!!) || 
-            categoryRepository.findByUserIsNullAndName(request.name) != null) {
+        if (categoryRepository.existsByUserAndName(user, categoryName) || 
+            categoryRepository.findByUserIsNullAndName(categoryName) != null) {
             throw ConflictException("Category with this name already exists")
         }
 
         val category = Category(
-            name = request.name,
-            type = request.type!!,
+            name = categoryName,
+            type = requireNotNull(request.type) { "Category type is required" },
             isCustom = true,
             user = user
         )
@@ -67,8 +68,9 @@ class CategoryService(
         val customCat = categoryRepository.findByUserAndName(user, name)
             ?: throw ResourceNotFoundException("Category not found")
 
+        val categoryId = requireNotNull(customCat.id) { "Category ID should not be null" }
         // Check if category is referenced by any transaction
-        if (transactionRepository.existsByCategoryId(customCat.id!!)) {
+        if (transactionRepository.existsByCategoryId(categoryId)) {
             throw BadRequestException("Cannot delete category as it is referenced by transactions")
         }
 

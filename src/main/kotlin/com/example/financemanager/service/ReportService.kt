@@ -24,20 +24,11 @@ class ReportService(
 
         val categorySums = transactionRepository.getCategorySumsForUserBetweenDates(user, startDate, endDate)
 
-        val totalIncome = mutableMapOf<String, BigDecimal>()
-        val totalExpenses = mutableMapOf<String, BigDecimal>()
-        var netIncome = BigDecimal.ZERO
-        var netExpense = BigDecimal.ZERO
-
-        for (sum in categorySums) {
-            if (sum.type == CategoryType.INCOME) {
-                totalIncome[sum.categoryName] = sum.total
-                netIncome = netIncome.add(sum.total)
-            } else {
-                totalExpenses[sum.categoryName] = sum.total
-                netExpense = netExpense.add(sum.total)
-            }
-        }
+        val totalIncome = categorySums.filter { it.type == CategoryType.INCOME }.associate { it.categoryName to it.total }
+        val totalExpenses = categorySums.filter { it.type == CategoryType.EXPENSE }.associate { it.categoryName to it.total }
+        
+        val netIncome = totalIncome.values.fold(BigDecimal.ZERO, BigDecimal::add)
+        val netExpense = totalExpenses.values.fold(BigDecimal.ZERO, BigDecimal::add)
 
         return MonthlyReportResponse(
             month = month,
@@ -55,20 +46,11 @@ class ReportService(
 
         val categorySums = transactionRepository.getCategorySumsForUserBetweenDates(user, startDate, endDate)
 
-        val totalIncome = mutableMapOf<String, BigDecimal>()
-        val totalExpenses = mutableMapOf<String, BigDecimal>()
-        var netIncome = BigDecimal.ZERO
-        var netExpense = BigDecimal.ZERO
-
-        for (sum in categorySums) {
-            if (sum.type == CategoryType.INCOME) {
-                totalIncome[sum.categoryName] = sum.total
-                netIncome = netIncome.add(sum.total)
-            } else {
-                totalExpenses[sum.categoryName] = sum.total
-                netExpense = netExpense.add(sum.total)
-            }
-        }
+        val totalIncome = categorySums.filter { it.type == CategoryType.INCOME }.associate { it.categoryName to it.total }
+        val totalExpenses = categorySums.filter { it.type == CategoryType.EXPENSE }.associate { it.categoryName to it.total }
+        
+        val netIncome = totalIncome.values.fold(BigDecimal.ZERO, BigDecimal::add)
+        val netExpense = totalExpenses.values.fold(BigDecimal.ZERO, BigDecimal::add)
 
         return YearlyReportResponse(
             year = year,
