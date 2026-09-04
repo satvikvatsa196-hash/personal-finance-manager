@@ -95,6 +95,14 @@ src/main/kotlin/com/example/financemanager
 }
 ```
 
+**Partial Update Transaction (`PUT /api/transactions/{id}`)**
+```json
+{
+  "amount": 55000.00
+}
+```
+*(Omitted fields like category or description are safely ignored and preserved).*
+
 ## 10. Response Examples
 
 **Goal Progress (`GET /api/goals/1`)**
@@ -116,6 +124,7 @@ src/main/kotlin/com/example/financemanager
 * **Dates**: Transaction dates must be `@PastOrPresent`. Goal target dates must be `@Future`.
 * **Unique Names**: Custom categories cannot share a name with another custom category owned by the user, nor a system default category.
 * **Foreign Keys**: You cannot delete a category if a transaction is currently using it.
+* **Partial Updates**: `PUT` endpoints natively support partial updates. Fields omitted from the JSON payload bypass validation and preserve their existing values in the database.
 
 ## 12. Error Responses
 All errors are gracefully intercepted and formatted to prevent stack trace leakage:
@@ -158,8 +167,16 @@ Ensure the database is running, then execute:
 *The `DataInitializer` will automatically seed the 7 default categories on the first startup.*
 
 ## 18. Running Tests
+**Unit & Integration Tests**
 ```bash
 ./gradlew test
+```
+
+**E2E Bash Evaluation**
+To validate the live or local API against the comprehensive test suite:
+```bash
+chmod +x financial_manager_tests.sh
+./financial_manager_tests.sh https://your-deployment-url.onrender.com/api
 ```
 
 ## 19. Test Coverage
@@ -175,19 +192,19 @@ Interactive OpenAPI documentation is dynamically generated. While the applicatio
 * `http://localhost:8080/swagger-ui.html`
 
 ## 21. Deployment
-The application is deployment-ready as a standalone fat JAR.
-1. Build the production bundle:
+The application is fully containerized and configured for automated deployment on cloud platforms like **Render**.
+
+1. **Docker Multi-Stage Build**: The included `Dockerfile` uses the official `gradle:8.7.0-jdk21` image for compilation and the lightweight `eclipse-temurin:21-jre-jammy` image for execution.
+2. **Environment Variables**: Configure the cloud service with the same `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` variables pointing to your managed PostgreSQL instance.
+3. **Local Docker Execution**:
    ```bash
-   ./gradlew build
-   ```
-2. Run the compiled jar in your server environment:
-   ```bash
-   java -jar build/libs/personal-finance-manager-0.0.1-SNAPSHOT.jar
+   docker build -t finance-manager .
+   docker run -p 8080:8080 -e DB_URL=... -e DB_USERNAME=... -e DB_PASSWORD=... finance-manager
    ```
 
 ## 22. Design Decisions
 * **JPA Projections for Analytics**: Instead of fetching thousands of `Transaction` entities into memory to calculate monthly reports, the `ReportService` leverages JPQL `GROUP BY` aggregations to offload math natively to the PostgreSQL database.
-* **Immutable Transaction Dates**: `TransactionUpdateRequest` inherently omits the `date` field. This uses structural typing to strictly guarantee that developers cannot accidentally violate the "dates cannot change" requirement.
+* **Smart Partial Updates**: Modifying entities via `PUT` leverages nullable fields in the DTO layer (`TransactionUpdateRequest`, `GoalUpdateRequest`). The service layer intelligently checks for null values and selectively applies updates, providing PATCH-like flexibility while maintaining immutable constraints (like transaction dates).
 * **DTO Shielding**: JPA Entities strictly never cross the Controller layer. They are intercepted by services and mapped to DTOs to prevent accidental serialization of sensitive data (like password hashes).
 
 ## 23. Security Considerations
