@@ -77,13 +77,19 @@ class TransactionService(
     fun updateTransaction(user: User, id: Long, request: TransactionUpdateRequest): TransactionDto {
         val transaction = getTransactionForUser(user, id)
 
-        val categoryName = requireNotNull(request.category) { "Category is required" }
-        val category = categoryRepository.findAccessibleCategoryByName(user, categoryName)
-            ?: throw BadRequestException("Category not found or not accessible")
+        if (request.category != null) {
+            val category = categoryRepository.findAccessibleCategoryByName(user, request.category)
+                ?: throw BadRequestException("Category not found or not accessible")
+            transaction.category = category
+        }
 
-        transaction.amount = requireNotNull(request.amount) { "Amount is required" }
-        transaction.category = category
-        transaction.description = request.description
+        if (request.amount != null) {
+            transaction.amount = request.amount
+        }
+        
+        if (request.description != null) {
+            transaction.description = request.description
+        }
         // Date cannot be changed
 
         val updated = transactionRepository.save(transaction)

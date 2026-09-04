@@ -23,12 +23,12 @@ data class TransactionRequest(
 )
 
 data class TransactionUpdateRequest(
-    @field:NotNull(message = "Amount is required")
     @field:Positive(message = "Amount must be positive")
     val amount: BigDecimal?,
 
-    @field:NotBlank(message = "Category is required")
     val category: String?,
 
-    val description: String?
+    val description: String?,
+    
+    val date: LocalDate?
 )

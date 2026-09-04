@@ -38,3 +38,8 @@ out/
 
 ### Documentation ###
 *.pdf
+
+### Evaluation Scripts ###
+test.sh
+financial_manager_tests.sh
+*_session.txt
